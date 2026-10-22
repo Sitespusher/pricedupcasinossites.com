@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /visit/
+Disallow: /visit/*
+
+Sitemap: https://pricedupcasinossites.com/sitemap.xml
