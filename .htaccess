@@ -1,0 +1,67 @@
+RewriteEngine On
+# Affiliate links: exact paths, HTTP 302
+RedirectMatch 302 "^/visit/britisino/?$" "https://r1ollk2ing.com/d9DRqTdQ?domain=pricedupcasinossites.com&page=britsino"
+RedirectMatch 302 "^/visit/spin-formula/?$" "https://r1ollk2ing.com/d9DRqTdQ?domain=pricedupcasinossites.com&page=spinformula"
+RedirectMatch 302 "^/visit/spinobon/?$" "https://r1ollk2ing.com/d9DRqTdQ?domain=pricedupcasinossites.com&page=spinobon"
+RedirectMatch 302 "^/visit/rainbet/?$" "https://r1ollk2ing.com/d9DRqTdQ?domain=pricedupcasinossites.com"
+RedirectMatch 302 "^/visit/coincasino/?$" "https://r1ollk2ing.com/d9DRqTdQ?domain=pricedupcasinossites.com"
+RedirectMatch 302 "^/visit/aphrodite/?$" "https://r1ollk2ing.com/d9DRqTdQ?domain=pricedupcasinossites.com"
+RedirectMatch 302 "^/visit/dashbet/?$" "https://r1ollk2ing.com/d9DRqTdQ?domain=pricedupcasinossites.com"
+RedirectMatch 302 "^/visit/rollino/?$" "https://r1ollk2ing.com/VjMhP5?domain=pricedupcasinossites.com"
+RedirectMatch 302 "^/visit/golden-panda/?$" "https://r1ollk2ing.com/VjMhP5?domain=pricedupcasinossites.com"
+# Let mod_alias handle these paths before the fallback rewrite.
+RewriteRule ^visit/ - [L]
+
+
+# Убрать .html из URL (если такой файл есть)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*?)/?$ $1.html [NC,L]
+
+# Удалить index.html из URL
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /.*index\.html\ HTTP/
+RewriteRule ^(.*)index\.html$ /$1 [R=301,L]
+
+# Удалить двойные слэши (// → /)
+RewriteCond %{THE_REQUEST} //+
+RewriteRule .* %{REQUEST_URI} [R=301,L,NE]
+
+# Если ничего не найдено — редирект на главную
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^.*$ / [R=301,L]
+
+# Блокировка WP-уязвимостей и phpinfo
+<FilesMatch "(xmlrpc\.php|wp-login\.php|phpinfo\.php|info\.php|_phpinfo\.php)">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    # полный referrer уходит в трекер (Keitaro) при https→https
+    Header always set Referrer-Policy "no-referrer-when-downgrade"
+    Header set Cache-Control "public, max-age=14400, must-revalidate"
+</IfModule>
+
+# Статика версионируется папкой макета — кэш на год
+<FilesMatch "\.(webp|png|jpe?g|gif|svg|ico|css|js|woff2?)$">
+    <IfModule mod_headers.c>
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 4 hours"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/xml
+</IfModule>
